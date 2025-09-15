@@ -2,6 +2,10 @@ import csv
 import numpy as np
 import random
 
+# 경로 설정
+import os
+import datetime
+
 # --- 1. 데이터 로딩 ---
 def load_data(file_path):
     """
@@ -177,7 +181,7 @@ def genetic_algorithm(population_data, num_groups, options, generations, populat
     return population[best_chromosome_index], final_fitness_scores[best_chromosome_index]
 
 
-def print_result(chromosome, data):
+def print_result(chromosome, data, output_base):
     """결과를 보기 쉽게 출력합니다."""
     print("\n=== 최종 조 편성 결과 ===")
     result_rows = []
@@ -203,18 +207,23 @@ def print_result(chromosome, data):
                 '성별': member['성별']
             })
 
-    # CSV로 저장
-    import csv
-    with open('result.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    # CSV로 저장 (타임스탬프 기반 파일명)
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    os.makedirs(output_base, exist_ok=True)
+    filename = os.path.join(output_base, f'result_{timestamp}.csv')
+    with open(filename, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=['조', '이름', '기수', '성별'])
         writer.writeheader()
         writer.writerows(result_rows)
-    print("\n결과가 result.csv 파일로 저장되었습니다.")
+    print(f"\n결과가 {filename} 파일로 저장되었습니다.")
         
 # --- 5. 메인 실행부 ---
 if __name__ == "__main__":
     # --- 설정 변수 ---
-    FILE_PATH = "./회원명단.csv"    # 학생 정보 CSV 파일 경로
+    # input/output base 경로 선언
+    INPUT_BASE = "./data/input"
+    OUTPUT_BASE = "./data/output"
+    FILE_PATH = os.path.join(INPUT_BASE, "회원명단.csv")    # 학생 정보 CSV 파일 경로
 
     # --- 한 조당 인원수 제약조건 ---
     MIN_GROUP_SIZE = 4   # 한 조당 최소 인원수
@@ -276,7 +285,7 @@ if __name__ == "__main__":
 
         if best_overall_grouping is not None:
             print(f"\n=== 최적의 조 개수: {best_num_groups}개 ===")
-            print_result(best_overall_grouping, student_data)
+            print_result(best_overall_grouping, student_data, OUTPUT_BASE)
             print(f"\n최종 적합도 점수: {best_overall_score:.4f}")
         else:
             print("제약조건을 만족하는 조 개수가 없습니다. 최소/최대 인원수를 조정해보세요.")
