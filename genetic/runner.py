@@ -220,7 +220,7 @@ def print_result(chromosome, data, output_base):
 # --- 5. 메인 실행부 ---
 if __name__ == "__main__":
     # --- 설정 변수 ---
-    # input/output base 경로 선언
+    # input/output base 경로 선언 (상대 경로)
     INPUT_BASE = "./data/input"
     OUTPUT_BASE = "./data/output"
     FILE_PATH = os.path.join(INPUT_BASE, "회원명단.csv")    # 학생 정보 CSV 파일 경로
